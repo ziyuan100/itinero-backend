@@ -47,7 +47,7 @@ app.post("/register", async (req, res, next) => {
     const user = new User({username});
     try {
         const newUser = await User.register(user, password);
-        res.send("Successful Registration!");
+        res.json({ accessToken: accessToken });
     } catch (e) {
         res.send("Bad Registration")
     }
