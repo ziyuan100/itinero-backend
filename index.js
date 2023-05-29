@@ -8,7 +8,11 @@ require("dotenv").config();
 // process.env.PORT = 3000;
 
 const User = require("./models/user");
+const Guide = require("./models/guide");
 const { authenticateToken } = require("./middleware");
+
+const seedUsers  = require("./seeds/users");
+const seedGuides = require("./seeds/guides");
 
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
@@ -23,7 +27,6 @@ mongoose.connect(process.env.DB_URL || "mongodb://127.0.0.1:27017/itinero")
         console.log("Mongo error");
         console.log(e);
     })
-
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
@@ -73,8 +76,14 @@ app.post("/login", passport.authenticate('local', {session: false}), (req, res) 
 //     });
 // })
 
-app.get("/test", authenticateToken, (req, res) => {
-    res.send(req.user)
+app.get("/test", authenticateToken, async (req, res) => {
+    res.send(await Guide.find({}));
+})
+
+app.get("/seed", async (req, res) => {
+    await seedUsers();
+    await gseedGuides();
+    res.send("Seeded")
 })
 
 app.listen(process.env.PORT || 3000, ()=> {
