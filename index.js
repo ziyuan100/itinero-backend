@@ -3,12 +3,17 @@ const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const User = require("./models/user");
+// For testing purposes only
+// process.env.DB_URL = "mongodb://127.0.0.1:27017/itinero";
+// process.env.PORT = 3000;
 
-const session = require("express-session");
+const User = require("./models/user");
+const { authenticateToken } = require("./middleware");
+
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const jwt = require("jsonwebtoken");
 
 mongoose.connect(process.env.DB_URL || "mongodb://127.0.0.1:27017/itinero")
     .then(() => {
@@ -21,34 +26,9 @@ mongoose.connect(process.env.DB_URL || "mongodb://127.0.0.1:27017/itinero")
 
 
 app.use(express.urlencoded({extended: true}));
+app.use(express.json());
 
-const store = MongoStore.create({
-    mongoUrl: process.env.DB_URL,
-    touchAfter: 24 * 60 * 60,
-    crypto: {
-        secret: process.env.SECRET
-    }
-})
-
-store.on("error", (e) => {
-    console.log("Session Store Error", e)
-})
-
-const sessionConfig = {
-    store,
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
-        expires: Date.now() + 1000 * 60  * 60 * 24 * 7,
-        maxAge: 1000 * 60  * 60 * 24 * 7,
-    }
-}
-
-app.use(session(sessionConfig));
 app.use(passport.initialize());
-app.use(passport.session());
 
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
@@ -78,21 +58,25 @@ app.post("/register", async (req, res, next) => {
     // })
 })
 
-app.post("/login", passport.authenticate('local'), (req, res) => {
-    res.send("Successful Login!");
+app.post("/login", passport.authenticate('local', {session: false}), (req, res) => {
+    const accessToken = jwt.sign(req.user.toJSON(), process.env.ACCESS_TOKEN_SECRET)
+    res.json({ accessToken: accessToken });
 })
 
-app.get("/logout", (req, res, next) => {
-    req.logout((err) => {
-        if (err){
-            return next(err);
-        }
-        res.send("Successful Logout!");
-    });
+// cannot manually expire a token after creation, so logout with JWT cannot be server-side unlike sessions. To logout, client side must remove the token from storage
+// app.get("/logout", (req, res, next) => {
+//     req.logout((err) => {
+//         if (err){
+//             return next(err);
+//         }
+//         res.send("Successful Logout!");
+//     });
+// })
+
+app.get("/test", authenticateToken, (req, res) => {
+    res.send(req.user)
 })
 
 app.listen(process.env.PORT || 3000, ()=> {
     console.log(`Listening on port 3000`)
 })
-
-// TODO refactor local stuff(e.g. ports) to be able to upload to cyclic 
