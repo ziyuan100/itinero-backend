@@ -12,7 +12,14 @@ const GuideSchema = new Schema({
     description: String,
     locations: [
         {
-            type: String
+            place: {
+                type: String,
+                required: true
+            },
+            coordinates: {
+                type: [Number],
+                required: true
+            }
         }
     ]    
 

@@ -24,7 +24,10 @@ const seedGuides = async () => {
             rating: 3,
             description: "This is the description for a test guide",
             locations: [
-                "Changi Airport", "Universal Studios", "Marina Bay Sands", "Orchard Road", "Fort Canning"
+                {place: "Marina Bay Sands", coordinates: [1.2851737484990227, 103.8591262702849]},
+                {place: "Orchard Road", coordinates: [1.3049921155454693, 103.83226276951687]},
+                {place: "Fort Canning", coordinates: [1.294184850222685, 103.8468643467981]},
+                {place: "Clarke Quay", coordinates: [1.2907847426379966, 103.84652784068132]},
             ],
             creator: user1
         })

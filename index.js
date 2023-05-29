@@ -80,6 +80,7 @@ app.get("/test", authenticateToken, async (req, res) => {
     res.send(await Guide.find({}));
 })
 
+// FOR TESTING PURPOSES ONLY
 app.get("/seed", async (req, res) => {
     await seedUsers();
     await seedGuides();
