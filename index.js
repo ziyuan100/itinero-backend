@@ -77,7 +77,14 @@ app.post("/login", passport.authenticate('local', {session: false}), (req, res) 
 // })
 
 app.get("/test", authenticateToken, async (req, res) => {
-    res.send(await Guide.find({}));
+    res.send("TBD");
+})
+
+// Since guides are not implemented in frontend yet, backend will provide test guide 1's data by default for dev purposes
+app.get("/guide", async (req, res) => {
+    const guide = await Guide.find({title: "Test Guide 1"})
+    console.log(guide);
+    res.json(guide);
 })
 
 // FOR TESTING PURPOSES ONLY
