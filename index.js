@@ -82,7 +82,7 @@ app.get("/test", authenticateToken, async (req, res) => {
 
 app.get("/seed", async (req, res) => {
     await seedUsers();
-    await gseedGuides();
+    await seedGuides();
     res.send("Seeded")
 })
 
