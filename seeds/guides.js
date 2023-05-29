@@ -4,7 +4,7 @@ const User = require("../models/user");
 require("dotenv").config();
 
 // For testing purposes only
-process.env.DB_URL = "mongodb://127.0.0.1:27017/itinero";
+// process.env.DB_URL = "mongodb://127.0.0.1:27017/itinero";
 
 mongoose.connect(process.env.DB_URL || "mongodb://127.0.0.1:27017/itinero")
     .then(() => {
